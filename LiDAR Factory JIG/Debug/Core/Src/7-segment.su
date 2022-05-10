@@ -1,0 +1,6 @@
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h:881:22:LL_GPIO_SetOutputPin	16	static
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h:910:22:LL_GPIO_ResetOutputPin	16	static
+../Core/Src/7-segment.c:21:6:turn_on	16	static
+../Core/Src/7-segment.c:54:6:turn_off	8	static
+../Core/Src/7-segment.c:62:6:pass	16	static
+../Core/Src/7-segment.c:108:6:fail	16	static
