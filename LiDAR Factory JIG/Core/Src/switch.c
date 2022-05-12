@@ -1,7 +1,6 @@
 #include "switch.h"
 
 uint8_t Mode_data;
-extern uint8_t Mode_data;
 
 void switch_check(void)
 {

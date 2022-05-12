@@ -47,6 +47,7 @@ extern "C"
 #include <string.h>
 #include "conf.h"
 #include "switch.h"
+#include "status.h"
   // UART1 : JIG Board DBG
   // UART2 : LiDAR RS232
   // UART3 : LiDAR RS485
@@ -140,21 +141,11 @@ extern "C"
 
   enum eStatus
   {
-    Status_Info = 0,
-    Status_Idle,
-    Status_Mode,
-    Status_Test,
-    Status_Result
+    kStatus_Idle = 0,
+    kStatus_Test,
+    kStatus_Result
   };
 
-  typedef struct
-  {
-    uint16_t m_FWver;
-    uint16_t m_HWver;
-    uint8_t m_Model;
-  } LiDAR_Info;
-
-  extern volatile LiDAR_Info g_LidarInfo;
   extern volatile enum eStatus g_Status;
 
   /* USER CODE END Private defines */

@@ -24,9 +24,7 @@
 uint8_t rx_data[RX_BUFFER_SIZE] = {
     0,
 };
-extern uint8_t rx_data[RX_BUFFER_SIZE];
 uint8_t rx_flag = 0;
-extern uint8_t rx_flag;
 uint8_t i = 0;
 extern uint8_t i;
 

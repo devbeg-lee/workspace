@@ -41,7 +41,8 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
  ../Core/Inc/conf.h ../Core/Inc/switch.h ../Core/Inc/stm32f4xx_it.h \
- ../Core/Inc/usart.h ../Core/Inc/result.h ../Core/Inc/delay.h
+ ../Core/Inc/usart.h ../Core/Inc/result.h ../Core/Inc/delay.h \
+ ../Core/Inc/status.h ../Core/Inc/protocol.h
 ../Core/Inc/gpio.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -91,3 +92,5 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
 ../Core/Inc/usart.h:
 ../Core/Inc/result.h:
 ../Core/Inc/delay.h:
+../Core/Inc/status.h:
+../Core/Inc/protocol.h:

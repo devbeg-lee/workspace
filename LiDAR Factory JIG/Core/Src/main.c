@@ -57,7 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-volatile enum eStatus g_Status = Status_Info;
+volatile enum eStatus g_Status = kStatus_Idle;
 
 uint8_t sArr[10][100] = {{
                              0,
@@ -68,9 +68,6 @@ uint8_t sArr[10][100] = {{
 uint8_t row_idx = 0;
 uint8_t col_idx = 0;
 uint8_t temp[6];
-void LiDAR_Protocol_Mode(uint8_t parameter);
-void GUI_Protocol_Mode(uint8_t parameter, uint8_t data);
-void UART_Transmit(USART_TypeDef *USARTx, uint8_t *data, uint16_t length);
 uint8_t result_1 = 0;
 uint8_t result_2 = 0;
 uint8_t result_3 = 0;
@@ -81,14 +78,10 @@ extern uint8_t tx_start_flag;
 uint8_t stop_feedback = 0;
 uint32_t adc_val = 0;
 uint8_t avg = 0;
-uint8_t CONNECT_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0xDA};
-uint8_t INFO_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x25};
-uint8_t MODE_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x01, 0x00, 0x01, 0x00, 0xDA};
 
-uint8_t INFO_Tx[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
 extern uint8_t rx_flag;
 extern uint8_t rx_data[9];
-uint8_t connect = 0;
+
 extern uint8_t i;
 extern uint8_t Mode_data;
 
@@ -152,24 +145,30 @@ int main(void)
   //  buzzer_main();
   while (1)
   {
+    switch (g_Status)
+    {
+    case kStatus_Idle:
+      Idle_status();
+      break;
+      /*
+          case kStatus_Test:
+            Test_status();
+            break;
+
+          case kStatus_Result:
+            Result_status();
+            break;
+*/
+    default:
+      break;
+    }
 
     /*    PC -> JIG B/D UART Interrupt
     if (rx_flag)
     {
-      if (memcmp(&CONNECT_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
-      {
-        GUI_Protocol_Mode(GUI_COMMAND_CONNECT, 0);
-        connect = 1;
-        // GPIO Interrupt disable repair
-      }
-      else if (memcmp(&INFO_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
-      {
-        UART_Transmit(UART5, INFO_Tx, sizeof(INFO_Tx));
-      }
-      else if (memcmp(&MODE_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
-      {
-        GUI_Protocol_Mode(GUI_COMMAND_MODE, Mode_data);
-      }
+
+
+
       else
       {
         connect = 2;
@@ -464,108 +463,6 @@ void Test_mode(void)
   // all [ok] : 7-segment, buzzer on
   // start button enable
   // Test->Idle Mode change //sj
-}
-
-void LiDAR_Protocol_Mode(uint8_t parameter)
-{
-  uint8_t checksum = 0U;
-  uint8_t cnt = 0U;
-  uint8_t senddata[9] = {0};
-
-  switch (parameter)
-  {
-  case LIDAR_COMMAND_INFO:
-  case LIDAR_COMMAND_START:
-  case LIDAR_COMMAND_DETECT1:
-  case LIDAR_COMMAND_DETECT2:
-  case LIDAR_COMMAND_DETECT3:
-
-    senddata[cnt++] = PROTOCOL_HEADER;
-    senddata[cnt++] = PRODUCT_LINE;
-    senddata[cnt++] = PRODUCT_ID;
-    senddata[cnt++] = LIDAR_MODE;
-    senddata[cnt++] = parameter;
-    senddata[cnt++] = 0x00U;
-    senddata[cnt++] = 0x00U;
-    senddata[cnt++] = 0x00U;
-
-    checksum = senddata[0];
-    for (uint16_t i = 1U; i < cnt; i++)
-    {
-      checksum ^= senddata[i];
-    }
-    senddata[cnt++] = checksum;
-    break;
-  default:
-    break;
-  }
-  UART_Transmit(USART6, senddata, sizeof(senddata));
-}
-
-void GUI_Protocol_Mode(uint8_t parameter, uint8_t data)
-{
-  uint8_t checksum = 0U;
-  uint8_t cnt = 0U;
-  uint8_t senddata[9] = {0};
-
-  switch (parameter)
-  {
-  case GUI_COMMAND_CONNECT:
-    senddata[cnt++] = PROTOCOL_HEADER;
-    senddata[cnt++] = PRODUCT_LINE;
-    senddata[cnt++] = PRODUCT_ID;
-    senddata[cnt++] = GUI_MODE;
-    senddata[cnt++] = parameter;
-    senddata[cnt++] = 0x00U;
-    senddata[cnt++] = 0x00U;
-    senddata[cnt++] = data;
-
-    checksum = senddata[0];
-    for (uint16_t i = 1U; i < cnt; i++)
-    {
-      checksum ^= senddata[i];
-    }
-    senddata[cnt++] = checksum;
-    break;
-
-  case GUI_COMMAND_MODE:
-  case GUI_COMMAND_ETHERNET:
-  case GUI_COMMAND_APD_BIAS:
-  case GUI_COMMAND_MOT_SPEED:
-  case GUI_COMMAND_ENC_CHECK:
-  case GUI_COMMAND_TDC_INIT:
-  case GUI_COMMAND_TDC_CAL:
-
-    senddata[cnt++] = PROTOCOL_HEADER;
-    senddata[cnt++] = PRODUCT_LINE;
-    senddata[cnt++] = PRODUCT_ID;
-    senddata[cnt++] = GUI_MODE;
-    senddata[cnt++] = parameter;
-    senddata[cnt++] = 0x00U;
-    senddata[cnt++] = 0x01U;
-    senddata[cnt++] = data; // 0x00 : Factory JIG MODE, 0x01 : Tx MODE    0x00 : OK, 0x01 : FAIL
-
-    checksum = senddata[0];
-    for (uint16_t i = 1U; i < cnt; i++)
-    {
-      checksum ^= senddata[i];
-    }
-    senddata[cnt++] = checksum;
-    break;
-  default:
-    break;
-  }
-  UART_Transmit(UART5, senddata, sizeof(senddata));
-}
-
-void UART_Transmit(USART_TypeDef *USARTx, uint8_t *data, uint16_t length)
-{
-  for (uint16_t i = 0; i < length; i++)
-  {
-    LL_USART_TransmitData8(USARTx, data[i]);
-    while (!LL_USART_IsActiveFlag_TXE(USARTx))
-      ;
-  }
 }
 
 /* USER CODE END 4 */

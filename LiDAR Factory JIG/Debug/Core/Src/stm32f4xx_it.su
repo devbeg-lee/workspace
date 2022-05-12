@@ -11,4 +11,4 @@
 ../Core/Src/stm32f4xx_it.c:186:6:SysTick_Handler	8	static
 ../Core/Src/stm32f4xx_it.c:207:6:EXTI0_IRQHandler	8	static
 ../Core/Src/stm32f4xx_it.c:227:6:EXTI15_10_IRQHandler	8	static
-../Core/Src/stm32f4xx_it.c:274:6:UART5_IRQHandler	8	static
+../Core/Src/stm32f4xx_it.c:271:6:UART5_IRQHandler	8	static

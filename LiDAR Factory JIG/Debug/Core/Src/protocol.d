@@ -1,4 +1,4 @@
-Core/Src/7-segment.o: ../Core/Src/7-segment.c ../Core/Inc/7-segment.h \
+Core/Src/protocol.o: ../Core/Src/protocol.c ../Core/Inc/protocol.h \
  ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -40,9 +40,10 @@ Core/Src/7-segment.o: ../Core/Src/7-segment.c ../Core/Inc/7-segment.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_utils.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
- ../Core/Inc/conf.h ../Core/Inc/main.h ../Core/Inc/buzzer.h \
- ../Core/Inc/switch.h ../Core/Inc/stm32f4xx_it.h ../Core/Inc/usart.h
-../Core/Inc/7-segment.h:
+ ../Core/Inc/conf.h ../Core/Inc/switch.h ../Core/Inc/stm32f4xx_it.h \
+ ../Core/Inc/usart.h ../Core/Inc/result.h ../Core/Inc/delay.h \
+ ../Core/Inc/status.h ../Core/Inc/protocol.h
+../Core/Inc/protocol.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -86,8 +87,10 @@ Core/Src/7-segment.o: ../Core/Src/7-segment.c ../Core/Inc/7-segment.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h:
 ../Core/Inc/conf.h:
-../Core/Inc/main.h:
-../Core/Inc/buzzer.h:
 ../Core/Inc/switch.h:
 ../Core/Inc/stm32f4xx_it.h:
 ../Core/Inc/usart.h:
+../Core/Inc/result.h:
+../Core/Inc/delay.h:
+../Core/Inc/status.h:
+../Core/Inc/protocol.h:

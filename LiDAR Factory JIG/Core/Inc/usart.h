@@ -42,8 +42,9 @@ extern "C"
 
     void MX_UART5_Init(void);
     void MX_USART6_UART_Init(void);
-    void GUI_Protocol_Mode(uint8_t parameter, uint8_t data);
 
+    extern uint8_t rx_flag;
+    extern uint8_t rx_data[RX_BUFFER_SIZE];
     /* USER CODE BEGIN Prototypes */
     void UART5_Rx_Callback(USART_TypeDef *USARTx);
     /* USER CODE END Prototypes */
