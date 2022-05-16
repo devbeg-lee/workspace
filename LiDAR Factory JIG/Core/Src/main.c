@@ -150,33 +150,18 @@ int main(void)
     case kStatus_Idle:
       Idle_status();
       break;
-      /*
-          case kStatus_Test:
-            Test_status();
-            break;
 
-          case kStatus_Result:
-            Result_status();
-            break;
-*/
+    case kStatus_Test:
+      Test_status();
+      break;
+
+    case kStatus_Result:
+      Result_status();
+      break;
+
     default:
       break;
     }
-
-    /*    PC -> JIG B/D UART Interrupt
-    if (rx_flag)
-    {
-
-
-
-      else
-      {
-        connect = 2;
-      }
-      memset(rx_data, 0, sizeof(rx_data));
-      rx_flag = 0;
-    }
-    */
 
     /* //    Tx_Mode_5ea feedback check
      if (tx_start_flag)

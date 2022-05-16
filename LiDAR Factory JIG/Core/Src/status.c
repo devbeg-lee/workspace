@@ -8,6 +8,7 @@ void Idle_status(void)
     uint8_t CONNECT_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0xDA};
     uint8_t INFO_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x25};
     uint8_t MODE_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x01, 0x00, 0x01, 0x00, 0xDA};
+    uint8_t START_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x01, 0x00, 0x00, 0x00, 0x24};
     uint8_t INFO_RX_BUFF[13] = {
         0x00,
     };
@@ -58,6 +59,10 @@ void Idle_status(void)
         {
             GUI_Protocol_Tx(GUI_COMMAND_MODE, Mode_data);
         }
+        else if (memcmp(&START_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
+        {
+            g_Status = kStatus_Test;
+        }
         else
         {
         }
@@ -79,4 +84,16 @@ void Idle_status(void)
         {
         }
     }
+}
+
+void Test_status(void)
+{
+    uint8_t ETH_BUFF[6] = {' ', 'E', 't', 'h', 'e', 'r'};
+    uint8_t APD_BUFF[6] = {' ', 'A', 'P', 'D', ' ', 'B'};
+    uint8_t MOT_BUFF[6] = {' ', 'M', 'o', 't', 'o', 'r'};
+    uint8_t ENC_BUFF[6] = {' ', 'E', 'n', 'c', 'o', 'd'};
+    uint8_t TDC_INIT_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'I'};
+    uint8_t TDC_CAL_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'C'};
+
+    LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
 }

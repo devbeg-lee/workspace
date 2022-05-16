@@ -1,3 +1,0 @@
-../Core/Inc/delay.h:25:24:Delay_us	24	static
-../Core/Src/delay.c:9:10:DWT_Delay_Init	4	static,ignoring_inline_asm
-../Core/Src/delay.c:40:6:Delay_ms	16	static

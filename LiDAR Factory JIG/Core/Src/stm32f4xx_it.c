@@ -230,14 +230,9 @@ void EXTI15_10_IRQHandler(void) // start button interrupt
 
   if (Mode_data == 0) // jig mode
   {
-    if (jig_start_flag == 0)
-    {
-      jig_start_flag = 1;
-    }
-    else
-    {
-      jig_start_flag = 0;
-    }
+    jig_start_flag = 1;
+    HAL_NVIC_DisableIRQ(UART5_IRQn);
+    g_Status = kStatus_Test;
   }
   else // tx mode
   {
