@@ -10,6 +10,7 @@ extern "C"
 
   void Delay_ms(uint32_t ms);
 
+
   /**
    * @brief  Initializes DWT_Cycle_Count for DWT_Delay_us function
    * @return Error DWT counter
@@ -17,7 +18,6 @@ extern "C"
    *         0: DWT counter works
    */
   uint32_t DWT_Delay_Init(void);
-
   /**
    * @brief  This function provides a delay (in microseconds)
    * @param  microseconds: delay in microseconds
@@ -31,7 +31,7 @@ extern "C"
 
     /* Delay till end */
     while ((DWT->CYCCNT - clk_cycle_start) < microseconds)
-      ;
+    	;
   }
 
 #ifdef __cplusplus

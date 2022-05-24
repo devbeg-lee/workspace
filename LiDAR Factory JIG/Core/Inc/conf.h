@@ -19,3 +19,6 @@
 #define GUI_COMMAND_TDC_INIT 0x06U
 #define GUI_COMMAND_TDC_CAL 0x07U
 #define RX_BUFFER_SIZE 0x09U
+
+#define ADC_OFFSET 2.5437F //  1>> 2.5484  2>> 2.539  3>> 2.6169(편차 큼)  ADC Out : 약 380, R300 oper cur : 154mA   380 /154 = 2.xx
+#define ADC_AVG_BUFFER_SIZE 100U

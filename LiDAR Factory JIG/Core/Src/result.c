@@ -288,7 +288,7 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_11: //여분
+    case kResult_Err_11: // LD Tx feedback Fail
         for (uint8_t j = 0; j <= 3; j++)
         {
             fail_sound(j);

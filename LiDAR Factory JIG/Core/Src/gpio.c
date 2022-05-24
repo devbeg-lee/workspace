@@ -59,16 +59,19 @@ void MX_GPIO_Init(void)
   LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOD);
 
   /**/
-  LL_GPIO_ResetOutputPin(GPIOC, FND_A_Pin | FND_F_Pin | FND_E_Pin | FND1_SIG_Pin | FND4_SIG_Pin | FND3_SIG_Pin);
+  LL_GPIO_ResetOutputPin(GPIOC, FND_A_Pin|FND_F_Pin|FND_E_Pin|FND1_SIG_Pin
+                          |FND4_SIG_Pin|FND3_SIG_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(GPIOA, GREEN_LED_Pin | RED_LED_Pin);
+  LL_GPIO_ResetOutputPin(GPIOA, GREEN_LED_Pin|RED_LED_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(GPIOB, BLUE_LED_Pin | LD_TRIG_Pin | FND2_SIG_Pin | FND_C_Pin | FND_B_Pin | FND_D_Pin | FND_G_Pin);
+  LL_GPIO_ResetOutputPin(GPIOB, BLUE_LED_Pin|LD_TRIG_Pin|FND2_SIG_Pin|FND_C_Pin
+                          |FND_B_Pin|FND_D_Pin|FND_G_Pin);
 
   /**/
-  GPIO_InitStruct.Pin = FND_A_Pin | FND_F_Pin | FND_E_Pin | FND1_SIG_Pin | FND4_SIG_Pin | FND3_SIG_Pin;
+  GPIO_InitStruct.Pin = FND_A_Pin|FND_F_Pin|FND_E_Pin|FND1_SIG_Pin
+                          |FND4_SIG_Pin|FND3_SIG_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
@@ -76,7 +79,7 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = GREEN_LED_Pin | RED_LED_Pin;
+  GPIO_InitStruct.Pin = GREEN_LED_Pin|RED_LED_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
@@ -84,7 +87,7 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_2 | LL_GPIO_PIN_3 | LL_GPIO_PIN_9 | LL_GPIO_PIN_10;
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_2|LL_GPIO_PIN_3|LL_GPIO_PIN_9|LL_GPIO_PIN_10;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
@@ -93,7 +96,8 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = Detect_SIG_1_Pin | Detect_SIG_2_Pin | Detect_SIG_3_Pin | SW_OP_3_Pin | SW_OP_2_Pin | SW_OP_1_Pin;
+  GPIO_InitStruct.Pin = Detect_SIG_1_Pin|Detect_SIG_2_Pin|Detect_SIG_3_Pin|SW_OP_3_Pin
+                          |SW_OP_2_Pin|SW_OP_1_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -131,7 +135,8 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(FB_STOP1_SIG_GPIO_Port, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = LD_TRIG_Pin | FND2_SIG_Pin | FND_C_Pin | FND_B_Pin | FND_D_Pin | FND_G_Pin;
+  GPIO_InitStruct.Pin = LD_TRIG_Pin|FND2_SIG_Pin|FND_C_Pin|FND_B_Pin
+                          |FND_D_Pin|FND_G_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
@@ -177,10 +182,11 @@ void MX_GPIO_Init(void)
   LL_GPIO_SetPinMode(START_SW_GPIO_Port, START_SW_Pin, LL_GPIO_MODE_INPUT);
 
   /* EXTI interrupt init*/
-  NVIC_SetPriority(EXTI0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+  NVIC_SetPriority(EXTI0_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
   NVIC_EnableIRQ(EXTI0_IRQn);
-  NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+  NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
   NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 2 */

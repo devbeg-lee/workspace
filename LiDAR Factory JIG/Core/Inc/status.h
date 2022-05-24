@@ -5,6 +5,7 @@
 #include "usart.h"
 #include "protocol.h"
 #include "switch.h"
+#include "adc.h"
 
 void Idle_status(void);
 void Mode_status(void);

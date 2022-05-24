@@ -1,6 +1,10 @@
 #include "status.h"
 
 uint8_t connect = 0;
+uint8_t INFO_RX_Flag = 0;
+uint8_t INFO_RX_BUFF[13] = {
+    0x00,
+};
 
 void Idle_status(void)
 {
@@ -9,13 +13,12 @@ void Idle_status(void)
     uint8_t INFO_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x25};
     uint8_t MODE_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x01, 0x00, 0x01, 0x00, 0xDA};
     uint8_t START_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x01, 0x00, 0x00, 0x00, 0x24};
-    uint8_t INFO_RX_BUFF[13] = {
-        0x00,
-    };
-    uint8_t INFO_RX_Flag = 0;
+
     uint8_t checksum = 0;
 
     uint8_t temp_INFO_DATA[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
+
+    LiDAR_Cur_Check();
 
     if (rx_flag)
     {
@@ -27,10 +30,10 @@ void Idle_status(void)
         }
         else if (memcmp(&INFO_BUFF, &rx_data, RX_BUFFER_SIZE) == 0) // PC -> JIG Info request
         {
+            // UART_Transmit(UART5, temp_INFO_DATA, 13);
+
             if (INFO_RX_Flag == 0)
             {
-                UART_Transmit(UART5, temp_INFO_DATA, 13);
-                /*
                 LiDAR_Protocol_Tx(LIDAR_COMMAND_INFO);
                 for (uint8_t i = 0; i <= 12; i++)
                 {
@@ -48,7 +51,6 @@ void Idle_status(void)
                     INFO_RX_Flag = 1;
                     UART_Transmit(UART5, INFO_RX_BUFF, 13);
                 }
-                */
             }
             else
             {
@@ -57,7 +59,7 @@ void Idle_status(void)
         }
         else if (memcmp(&MODE_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
         {
-            GUI_Protocol_Tx(GUI_COMMAND_MODE, Mode_data);
+            GUI_Protocol_Mode_Tx(Mode_data);
         }
         else if (memcmp(&START_BUFF, &rx_data, RX_BUFFER_SIZE) == 0)
         {
@@ -77,12 +79,16 @@ void Idle_status(void)
             {
                 INFO_RX_BUFF[i] = LL_USART_ReceiveData8(USART6);
             }
-            INFO_RX_Flag = 1;
+            if (INFO_RX_BUFF[0] != 0x00)
+            {
+                INFO_RX_Flag = 1;
+            }
         }
 
         else
         {
         }
+        Delay_ms(500);
     }
 }
 
@@ -96,4 +102,5 @@ void Test_status(void)
     uint8_t TDC_CAL_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'C'};
 
     LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
+    Delay_ms(500);
 }

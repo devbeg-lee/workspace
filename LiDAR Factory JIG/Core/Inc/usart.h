@@ -22,35 +22,34 @@
 #define __USART_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-    /* USER CODE BEGIN Includes */
+/* USER CODE BEGIN Includes */
     //#include <string.h>
 
-    /* USER CODE END Includes */
+/* USER CODE END Includes */
 
-    extern UART_HandleTypeDef huart6;
+extern UART_HandleTypeDef huart6;
 
-    /* USER CODE BEGIN Private defines */
-
-    /* USER CODE END Private defines */
-
-    void MX_UART5_Init(void);
-    void MX_USART6_UART_Init(void);
-
-    extern uint8_t rx_flag;
+/* USER CODE BEGIN Private defines */
     extern uint8_t rx_data[RX_BUFFER_SIZE];
-    /* USER CODE BEGIN Prototypes */
+    extern uint8_t rx_flag;
+/* USER CODE END Private defines */
+
+void MX_UART5_Init(void);
+void MX_USART6_UART_Init(void);
+
+/* USER CODE BEGIN Prototypes */
     void UART5_Rx_Callback(USART_TypeDef *USARTx);
-    /* USER CODE END Prototypes */
+/* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __USART_H__ */
+
