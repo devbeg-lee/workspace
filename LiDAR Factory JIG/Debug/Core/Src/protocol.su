@@ -1,9 +1,3 @@
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h:1792:26:LL_USART_IsActiveFlag_RXNE	16	static
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h:1814:26:LL_USART_IsActiveFlag_TXE	16	static
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h:2403:25:LL_USART_ReceiveData8	16	static
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h:2426:22:LL_USART_TransmitData8	16	static
 ../Core/Src/protocol.c:3:6:LiDAR_Protocol_Tx	32	static
-../Core/Src/protocol.c:39:6:GUI_Protocol_Tx	32	static
-../Core/Src/protocol.c:95:6:GUI_Protocol_Mode_Tx	32	static
-../Core/Src/protocol.c:121:6:UART_Transmit	32	static
-../Core/Src/protocol.c:131:9:UART_Receive	16	static
+../Core/Src/protocol.c:40:6:GUI_Protocol_Tx	32	static
+../Core/Src/protocol.c:97:6:GUI_Protocol_Mode_Tx	32	static

@@ -82,15 +82,17 @@ uint8_t feedback_ng_cnt = 0;
 extern uint8_t rx_flag;
 extern uint8_t rx_data[9];
 
-extern uint8_t i;
 extern uint8_t Mode_data;
+
+uint8_t rx_buff_cnt = 0;
+uint8_t rx_buff[255] = {0};
 
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -121,16 +123,28 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
-  LL_USART_EnableIT_RXNE(UART5);
-  // LL_USART_Enable(USART6);
+  InitUartQueue(&ViewerQueue);
+  InitUartQueue(&LiDARQueue);
+  if (HAL_UART_Receive_IT(&hViewer, ViewerQueue.Buffer, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UART_Receive_IT(&hLiDAR, LiDARQueue.Buffer, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  //  LL_USART_EnableIT_RXNE(UART5);
+  //  LL_USART_EnableIT_RXNE(USART6);
   switch_check();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
+
     if (Mode_data == 0) // Factory JIG
     {
       switch (g_Status)
@@ -153,7 +167,6 @@ int main(void)
     }
     else // LD Tx
     {
-      HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
       if (tx_start_flag == 1)
       {
         if (stop_feedback == 0)
@@ -233,30 +246,31 @@ int main(void)
     //   GUI_Protocol_Mode(GUI_COMMAND_TDC_CAL, 0);
     //   result_6 = 0;
     // }
-    /* USER CODE END WHILE */
+  }
+  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -273,16 +287,15 @@ void SystemClock_Config(void)
   }
 
   /** Activate the Over-Drive mode
-  */
+   */
   if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -445,9 +458,9 @@ void Test_mode(void)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -459,14 +472,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

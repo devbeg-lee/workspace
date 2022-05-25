@@ -9,11 +9,13 @@ void switch_check(void)
         Mode_data = 0x00U;
         LL_GPIO_SetOutputPin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
         LL_GPIO_ResetOutputPin(RED_LED_GPIO_Port, RED_LED_Pin);
+        HAL_NVIC_EnableIRQ(UART5_IRQn);
     }
     else // LD Tx
     {
         Mode_data = 0x01U;
         LL_GPIO_ResetOutputPin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
         LL_GPIO_SetOutputPin(RED_LED_GPIO_Port, RED_LED_Pin);
+        HAL_NVIC_DisableIRQ(UART5_IRQn);
     }
 }

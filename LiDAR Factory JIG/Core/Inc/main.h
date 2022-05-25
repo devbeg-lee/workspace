@@ -23,19 +23,19 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-#include "stm32f4xx_ll_usart.h"
-#include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_system.h"
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_exti.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_cortex.h"
+#include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_utils.h"
 #include "stm32f4xx_ll_pwr.h"
 #include "stm32f4xx_ll_dma.h"
@@ -47,31 +47,33 @@ extern "C" {
 #include "conf.h"
 #include "switch.h"
 #include "status.h"
+#include "usart.h"
+#include "ringbuf.h"
   // UART1 : JIG Board DBG
   // UART2 : LiDAR RS232
   // UART3 : LiDAR RS485
   // UART5 : PC
   // UART6 : LiDAR UART     //sj - uart define
 
-/* USER CODE END Includes */
+  /* USER CODE END Includes */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
+  /* Exported types ------------------------------------------------------------*/
+  /* USER CODE BEGIN ET */
 
-/* USER CODE END ET */
+  /* USER CODE END ET */
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
+  /* Exported constants --------------------------------------------------------*/
+  /* USER CODE BEGIN EC */
 
-/* USER CODE END EC */
+  /* USER CODE END EC */
 
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
+  /* Exported macro ------------------------------------------------------------*/
+  /* USER CODE BEGIN EM */
 
-/* USER CODE END EM */
+  /* USER CODE END EM */
 
-/* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+  /* Exported functions prototypes ---------------------------------------------*/
+  void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
@@ -134,9 +136,7 @@ void Error_Handler(void);
 #define FND_D_GPIO_Port GPIOB
 #define FND_G_Pin LL_GPIO_PIN_9
 #define FND_G_GPIO_Port GPIOB
-/* USER CODE BEGIN Private defines */
-  void USART6_Rx_Callback(USART_TypeDef *USARTx);
-  void UART5_Rx_Callback(USART_TypeDef *USARTx);
+  /* USER CODE BEGIN Private defines */
 
   enum eStatus
   {
@@ -147,7 +147,7 @@ void Error_Handler(void);
 
   extern volatile enum eStatus g_Status;
 
-/* USER CODE END Private defines */
+  /* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

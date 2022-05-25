@@ -1,0 +1,3 @@
+../Core/Src/ringbuf.c:8:6:InitUartQueue	16	static
+../Core/Src/ringbuf.c:13:6:PutDataToUartQueue	24	static
+../Core/Src/ringbuf.c:24:9:GetDataFromUartQueue	24	static

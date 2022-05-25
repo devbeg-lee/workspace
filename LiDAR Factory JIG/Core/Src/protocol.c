@@ -33,7 +33,8 @@ void LiDAR_Protocol_Tx(uint8_t parameter)
     default:
         break;
     }
-    UART_Transmit(USART6, senddata, sizeof(senddata));
+    HAL_UART_Transmit(&hLiDAR, senddata, sizeof(senddata), 100);
+    //    UART_Transmit(USART6, senddata, sizeof(senddata));
 }
 
 void GUI_Protocol_Tx(uint8_t parameter, uint8_t data)
@@ -89,7 +90,8 @@ void GUI_Protocol_Tx(uint8_t parameter, uint8_t data)
     default:
         break;
     }
-    UART_Transmit(UART5, senddata, sizeof(senddata));
+    HAL_UART_Transmit(&hViewer, senddata, sizeof(senddata), 100);
+    //    UART_Transmit(UART5, senddata, sizeof(senddata));
 }
 
 void GUI_Protocol_Mode_Tx(uint8_t data)
@@ -115,22 +117,23 @@ void GUI_Protocol_Mode_Tx(uint8_t data)
     }
     senddata[cnt++] = checksum;
 
-    UART_Transmit(UART5, senddata, sizeof(senddata));
+    HAL_UART_Transmit(&hViewer, senddata, sizeof(senddata), 100);
+    //    UART_Transmit(UART5, senddata, sizeof(senddata));
 }
 
-void UART_Transmit(USART_TypeDef *USARTx, uint8_t *data, uint16_t length)
-{
-    for (uint16_t i = 0; i < length; i++)
-    {
-        LL_USART_TransmitData8(USARTx, data[i]);
-        while (!LL_USART_IsActiveFlag_TXE(USARTx))
-            ;
-    }
-}
-
-uint8_t UART_Receive(USART_TypeDef *USARTx)
-{
-    while (!LL_USART_IsActiveFlag_RXNE(USARTx))
-        ;
-    return LL_USART_ReceiveData8(USARTx);
-}
+// void UART_Transmit(USART_TypeDef *USARTx, uint8_t *data, uint16_t length)
+//{
+//     for (uint16_t i = 0; i < length; i++)
+//     {
+//         LL_USART_TransmitData8(USARTx, data[i]);
+//         while (!LL_USART_IsActiveFlag_TXE(USARTx))
+//             ;
+//     }
+// }
+//
+// uint8_t UART_Receive(USART_TypeDef *USARTx)
+//{
+//     while (!LL_USART_IsActiveFlag_RXNE(USARTx))
+//         ;
+//     return LL_USART_ReceiveData8(USARTx);
+// }
