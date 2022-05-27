@@ -57,7 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-volatile enum eStatus g_Status = kStatus_Idle;
+volatile enum eStatus g_Status = kStatus_Info;
 
 uint8_t sArr[10][100] = {{
                              0,
@@ -75,6 +75,7 @@ uint8_t result_4 = 0;
 uint8_t result_5 = 0;
 uint8_t result_6 = 0;
 extern uint8_t tx_start_flag;
+extern volatile uint8_t detect_flag;
 uint8_t avg = 0;
 uint8_t stop_feedback = 0;
 uint8_t feedback_ng_cnt = 0;
@@ -83,9 +84,6 @@ extern uint8_t rx_flag;
 extern uint8_t rx_data[9];
 
 extern uint8_t Mode_data;
-
-uint8_t rx_buff_cnt = 0;
-uint8_t rx_buff[255] = {0};
 
 /* USER CODE END 0 */
 
@@ -123,6 +121,7 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
+
   InitUartQueue(&ViewerQueue);
   InitUartQueue(&LiDARQueue);
   if (HAL_UART_Receive_IT(&hViewer, ViewerQueue.Buffer, 1) != HAL_OK)
@@ -133,22 +132,61 @@ int main(void)
   {
     Error_Handler();
   }
-  //  LL_USART_EnableIT_RXNE(UART5);
-  //  LL_USART_EnableIT_RXNE(USART6);
+
   switch_check();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  __HAL_UART_ENABLE_IT(&huart5, UART_IT_RXNE);
+  __HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE);
 
   while (1)
   {
-
-    if (Mode_data == 0) // Factory JIG
+    if (tx_start_flag == 1) // LD Tx On
+    {
+      if (stop_feedback == 0)
+      {
+        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        stop_feedback = HAL_GPIO_ReadPin(FB_STOP1_SIG_GPIO_Port, FB_STOP1_SIG_Pin);
+        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        feedback_ng_cnt++;
+        if (feedback_ng_cnt >= 5)
+        {
+          g_Result = kResult_Err_11;
+          stop_feedback = 1;
+          feedback_ng_cnt = 0;
+        }
+        Delay_us(20);
+      }
+      else
+      {
+        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        Delay_us(20);
+      }
+    }
+    else // Etc.
     {
       switch (g_Status)
       {
+      case kStatus_Info:
+        Info_status();
+        break;
+
+      case kStatus_Detect1:
+        Detect1_status();
+        break;
+
+      case kStatus_Detect2:
+        Detect2_status();
+        break;
+
+      case kStatus_Detect3:
+        Detect3_status();
+        break;
+
       case kStatus_Idle:
         Idle_status();
         break;
@@ -163,35 +201,6 @@ int main(void)
 
       default:
         break;
-      }
-    }
-    else // LD Tx
-    {
-      if (tx_start_flag == 1)
-      {
-        if (stop_feedback == 0)
-        {
-          LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-          stop_feedback = HAL_GPIO_ReadPin(FB_STOP1_SIG_GPIO_Port, FB_STOP1_SIG_Pin);
-          LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-          feedback_ng_cnt++;
-          if (feedback_ng_cnt >= 5)
-          {
-            g_Result = kResult_Err_11;
-            stop_feedback = 1;
-            feedback_ng_cnt = 0;
-          }
-          Delay_us(20);
-        }
-        else
-        {
-          LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-          LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-          Delay_us(20);
-        }
-      }
-      else
-      {
       }
     }
 

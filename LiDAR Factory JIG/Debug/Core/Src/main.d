@@ -40,9 +40,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
  ../Core/Inc/conf.h ../Core/Inc/switch.h ../Core/Inc/main.h \
- ../Core/Inc/stm32f4xx_it.h ../Core/Inc/usart.h ../Core/Inc/result.h \
- ../Core/Inc/delay.h ../Core/Inc/status.h ../Core/Inc/protocol.h \
- ../Core/Inc/adc.h ../Core/Inc/ringbuf.h ../Core/Inc/adc.h \
+ ../Core/Inc/stm32f4xx_it.h ../Core/Inc/usart.h ../Core/Inc/status.h \
+ ../Core/Inc/protocol.h ../Core/Inc/adc.h ../Core/Inc/result.h \
+ ../Core/Inc/delay.h ../Core/Inc/ringbuf.h ../Core/Inc/adc.h \
  ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
  ../Core/Inc/result.h ../Core/Inc/delay.h
 ../Core/Inc/main.h:
@@ -91,11 +91,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/main.h:
 ../Core/Inc/stm32f4xx_it.h:
 ../Core/Inc/usart.h:
-../Core/Inc/result.h:
-../Core/Inc/delay.h:
 ../Core/Inc/status.h:
 ../Core/Inc/protocol.h:
 ../Core/Inc/adc.h:
+../Core/Inc/result.h:
+../Core/Inc/delay.h:
 ../Core/Inc/ringbuf.h:
 ../Core/Inc/adc.h:
 ../Core/Inc/tim.h:

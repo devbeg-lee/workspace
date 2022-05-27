@@ -41,8 +41,8 @@ Core/Src/ringbuf.o: ../Core/Src/ringbuf.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
  ../Core/Inc/conf.h ../Core/Inc/switch.h ../Core/Inc/stm32f4xx_it.h \
- ../Core/Inc/usart.h ../Core/Inc/result.h ../Core/Inc/delay.h \
- ../Core/Inc/status.h ../Core/Inc/protocol.h ../Core/Inc/adc.h \
+ ../Core/Inc/usart.h ../Core/Inc/status.h ../Core/Inc/protocol.h \
+ ../Core/Inc/adc.h ../Core/Inc/result.h ../Core/Inc/delay.h \
  ../Core/Inc/ringbuf.h
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -90,9 +90,9 @@ Core/Src/ringbuf.o: ../Core/Src/ringbuf.c \
 ../Core/Inc/switch.h:
 ../Core/Inc/stm32f4xx_it.h:
 ../Core/Inc/usart.h:
-../Core/Inc/result.h:
-../Core/Inc/delay.h:
 ../Core/Inc/status.h:
 ../Core/Inc/protocol.h:
 ../Core/Inc/adc.h:
+../Core/Inc/result.h:
+../Core/Inc/delay.h:
 ../Core/Inc/ringbuf.h:

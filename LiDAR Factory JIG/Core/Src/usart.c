@@ -21,16 +21,9 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-// uint8_t LiDAR_Rx_Buffer[255] = {0};
-// uint8_t Viewer_Rx_Buffer[9] = {0};
-// uint8_t LiDAR_Rx_Cnt = 0;
-// uint8_t Viewer_Rx_Cnt = 0;
-// uint8_t LiDAR_Rx_Flag = 0;
-// uint8_t Viewer_Rx_Flag = 0;
-// uint8_t LiDAR_Rx_Size = 0;
-
-volatile enum eLiDARComstatus g_LiDAR_ComStatus = kLiDARstatus_Info;
-
+uint8_t tx_start_flag = 0;
+volatile uint8_t g_Viewer_IRQ_Flag = 1;
+volatile uint8_t g_Start_Switch_IRQ_Flag = 1;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart5;
@@ -48,7 +41,7 @@ void MX_UART5_Init(void)
 
   /* USER CODE END UART5_Init 1 */
   huart5.Instance = UART5;
-  huart5.Init.BaudRate = 921600;
+  huart5.Init.BaudRate = 115200;
   huart5.Init.WordLength = UART_WORDLENGTH_8B;
   huart5.Init.StopBits = UART_STOPBITS_1;
   huart5.Init.Parity = UART_PARITY_NONE;
@@ -208,43 +201,44 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-/* void UART5_Rx_Callback(void)
+void HAL_UART5_RxCpltCallback(void)
 {
-  if (Viewer_Rx_Flag == 0)
+  if (g_Viewer_IRQ_Flag)
   {
-    Viewer_Rx_Buffer[Viewer_Rx_Cnt] = LL_USART_ReceiveData8(UART5);
-    Viewer_Rx_Cnt++;
-    if (Viewer_Rx_Cnt >= 9)
+    if ((__HAL_UART_GET_FLAG(&hViewer, UART_FLAG_RXNE) != RESET))
     {
-      Viewer_Rx_Cnt = 0;
-      Viewer_Rx_Flag = 1;
+      PutDataToUartQueue(&hViewer, (uint8_t)(hViewer.Instance->DR & (uint8_t)0x00FF));
+    }
+    __HAL_UART_CLEAR_PEFLAG(&hViewer); /* clear event flag */
+    return;
+  }
+
+  HAL_UART_Receive_IT(&hViewer, VIEWER_RX_BUFF, 1);
+}
+
+void EXTI15_10_EXTI_Callback(void)
+{
+  if (g_Start_Switch_IRQ_Flag)
+  {
+    if (Mode_data == 0) // jig mode
+    {
+      g_Status = kStatus_Test;
+    }
+    else // tx mode
+    {
+      if (tx_start_flag == 0)
+      {
+        tx_start_flag = 1;
+        // HAL_NVIC_DisableIRQ(UART5_IRQn);
+        g_Viewer_IRQ_Flag = 0;
+      }
+      else
+      {
+        tx_start_flag = 0;
+        // HAL_NVIC_EnableIRQ(UART5_IRQn);
+        g_Viewer_IRQ_Flag = 1;
+      }
     }
   }
 }
-
-void USART6_Rx_Callback(void)
-{
-  switch (g_LiDAR_ComStatus)
-  {
-  case kLiDARstatus_Info:
-    LiDAR_Rx_Size = 13;
-    break;
-  case kLiDARstatus_Etc:
-    LiDAR_Rx_Size = 9;
-    break;
-  case kLiDARstatus_Serial:
-    LiDAR_Rx_Size = 255;
-    break;
-  default:
-    break;
-
-    LiDAR_Rx_Buffer[LiDAR_Rx_Cnt] = LL_USART_ReceiveData8(USART6);
-    LiDAR_Rx_Cnt++;
-    if (LiDAR_Rx_Cnt >= LiDAR_Rx_Size)
-    {
-      LiDAR_Rx_Cnt = 0;
-      LiDAR_Rx_Flag = 1;
-    }
-  }
-} */
 /* USER CODE END 1 */

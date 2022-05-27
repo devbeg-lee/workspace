@@ -29,8 +29,8 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-    /* USER CODE BEGIN Includes */
-
+/* USER CODE BEGIN Includes */
+#include "status.h"
     /* USER CODE END Includes */
 
     extern UART_HandleTypeDef huart5;
@@ -38,29 +38,16 @@ extern "C"
     extern UART_HandleTypeDef huart6;
 
     /* USER CODE BEGIN Private defines */
-    enum eLiDARComstatus
-    {
-        kLiDARstatus_Etc = 0,
-        kLiDARstatus_Info,
-        kLiDARstatus_Serial
-    };
-
+    extern volatile uint8_t g_Viewer_IRQ_Flag;
+    extern volatile uint8_t g_Start_Switch_IRQ_Flag;
     /* USER CODE END Private defines */
 
     void MX_UART5_Init(void);
     void MX_USART6_UART_Init(void);
 
     /* USER CODE BEGIN Prototypes */
-    void UART5_Rx_Callback(void);
-    void USART6_Rx_Callback(void);
-
-    extern volatile enum eLiDARComstatus g_LiDAR_ComStatus;
-
-    // extern uint8_t LiDAR_Rx_Buffer[255];
-    // extern uint8_t Viewer_Rx_Buffer[9];
-    // extern uint8_t LiDAR_Rx_Flag;
-    // extern uint8_t Viewer_Rx_Flag;
-    // extern uint8_t LiDAR_Rx_Size;
+    void HAL_UART5_RxCpltCallback(void);
+    void EXTI15_10_EXTI_Callback(void);
 
     /* USER CODE END Prototypes */
 

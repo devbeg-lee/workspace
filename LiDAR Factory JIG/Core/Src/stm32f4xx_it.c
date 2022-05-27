@@ -22,7 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "status.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,8 +53,9 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-uint8_t tx_start_flag = 0;
 uint8_t data = 0;
+uint8_t Rx_Cnt = 0;
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -156,16 +157,16 @@ void SVC_Handler(void)
 }
 
 /**
- * @brief This function handles Debug ViewerhViewer.
+ * @brief This function handles Debug monitor.
  */
 void DebugMon_Handler(void)
 {
-  /* USER CODE BEGIN DebugViewerhViewer_IRQn 0 */
+  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
-  /* USER CODE END DebugViewerhViewer_IRQn 0 */
-  /* USER CODE BEGIN DebugViewerhViewer_IRQn 1 */
+  /* USER CODE END DebugMonitor_IRQn 0 */
+  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
 
-  /* USER CODE END DebugViewerhViewer_IRQn 1 */
+  /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
 /**
@@ -205,7 +206,7 @@ void SysTick_Handler(void)
 /**
  * @brief This function handles EXTI line 0 interrupt.
  */
-void EXTI0_IRQHandler(void)
+void EXTI0_IRQHandler(void) // mode switch
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
   switch_check();
@@ -225,26 +226,11 @@ void EXTI0_IRQHandler(void)
 /**
  * @brief This function handles EXTI line[15:10] interrupts.
  */
-void EXTI15_10_IRQHandler(void)
+void EXTI15_10_IRQHandler(void) // start button
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  if (Mode_data == 0) // jig mode
-  {
-    HAL_NVIC_DisableIRQ(UART5_IRQn);
-    // g_Status = kStatus_Test;
-    LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
-  }
-  else // tx mode
-  {
-    if (tx_start_flag == 0)
-    {
-      tx_start_flag = 1;
-    }
-    else
-    {
-      tx_start_flag = 0;
-    }
-  }
+  EXTI15_10_EXTI_Callback();
+
   /* USER CODE END EXTI15_10_IRQn 0 */
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_15) != RESET)
   {
@@ -266,13 +252,7 @@ void EXTI15_10_IRQHandler(void)
 void UART5_IRQHandler(void)
 {
   /* USER CODE BEGIN UART5_IRQn 0 */
-  if ((__HAL_UART_GET_FLAG(&hViewer, UART_FLAG_RXNE) != RESET))
-  {
-    PutDataToUartQueue(&hViewer, (uint8_t)(hViewer.Instance->DR & (uint8_t)0x00FF));
-  }
-  __HAL_UART_CLEAR_PEFLAG(&hViewer); /* clear event flag */
-  return;
-  //  UART5_Rx_Callback();
+  HAL_UART5_RxCpltCallback();
   /* USER CODE END UART5_IRQn 0 */
   HAL_UART_IRQHandler(&huart5);
   /* USER CODE BEGIN UART5_IRQn 1 */

@@ -1,8 +1,8 @@
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h:881:22:LL_GPIO_SetOutputPin	16	static
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h:910:22:LL_GPIO_ResetOutputPin	16	static
 ../Core/Inc/delay.h:25:24:Delay_us	24	static
-../Core/Src/main.c:96:5:main	8	static
-../Core/Src/main.c:261:6:SystemClock_Config	88	static
-../Core/Src/main.c:440:6:Idlemode	4	static
-../Core/Src/main.c:448:6:Test_mode	4	static
-../Core/Src/main.c:464:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:94:5:main	8	static
+../Core/Src/main.c:270:6:SystemClock_Config	88	static
+../Core/Src/main.c:449:6:Idlemode	4	static
+../Core/Src/main.c:457:6:Test_mode	4	static
+../Core/Src/main.c:473:6:Error_Handler	4	static,ignoring_inline_asm
