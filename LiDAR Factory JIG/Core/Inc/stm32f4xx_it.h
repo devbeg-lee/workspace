@@ -39,7 +39,7 @@ extern "C"
 
     /* Exported constants --------------------------------------------------------*/
     /* USER CODE BEGIN EC */
-
+    extern volatile uint8_t tx_start_flag;
     /* USER CODE END EC */
 
     /* Exported macro ------------------------------------------------------------*/

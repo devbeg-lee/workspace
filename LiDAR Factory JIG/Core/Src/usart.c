@@ -21,9 +21,6 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-uint8_t tx_start_flag = 0;
-volatile uint8_t g_Viewer_IRQ_Flag = 1;
-volatile uint8_t g_Start_Switch_IRQ_Flag = 1;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart5;
@@ -201,44 +198,4 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_UART5_RxCpltCallback(void)
-{
-  if (g_Viewer_IRQ_Flag)
-  {
-    if ((__HAL_UART_GET_FLAG(&hViewer, UART_FLAG_RXNE) != RESET))
-    {
-      PutDataToUartQueue(&hViewer, (uint8_t)(hViewer.Instance->DR & (uint8_t)0x00FF));
-    }
-    __HAL_UART_CLEAR_PEFLAG(&hViewer); /* clear event flag */
-    return;
-  }
-
-  HAL_UART_Receive_IT(&hViewer, VIEWER_RX_BUFF, 1);
-}
-
-void EXTI15_10_EXTI_Callback(void)
-{
-  if (g_Start_Switch_IRQ_Flag)
-  {
-    if (Mode_data == 0) // jig mode
-    {
-      g_Status = kStatus_Test;
-    }
-    else // tx mode
-    {
-      if (tx_start_flag == 0)
-      {
-        tx_start_flag = 1;
-        // HAL_NVIC_DisableIRQ(UART5_IRQn);
-        g_Viewer_IRQ_Flag = 0;
-      }
-      else
-      {
-        tx_start_flag = 0;
-        // HAL_NVIC_EnableIRQ(UART5_IRQn);
-        g_Viewer_IRQ_Flag = 1;
-      }
-    }
-  }
-}
 /* USER CODE END 1 */

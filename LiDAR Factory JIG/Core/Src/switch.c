@@ -11,8 +11,7 @@ void switch_check(void)
         LL_GPIO_ResetOutputPin(RED_LED_GPIO_Port, RED_LED_Pin);
         if (connect)
         {
-            // HAL_NVIC_DisableIRQ(EXTI15_10_IRQn); // Viewer start button enable only
-            g_Start_Switch_IRQ_Flag = 0;
+            LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15); // Viewer start button enable only
         }
     }
     else // LD Tx
@@ -20,7 +19,6 @@ void switch_check(void)
         Mode_data = 0x01U;
         LL_GPIO_ResetOutputPin(BLUE_LED_GPIO_Port, BLUE_LED_Pin);
         LL_GPIO_SetOutputPin(RED_LED_GPIO_Port, RED_LED_Pin);
-        // HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-        g_Start_Switch_IRQ_Flag = 1;
+        LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_15);
     }
 }

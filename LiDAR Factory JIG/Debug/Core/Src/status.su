@@ -1,6 +1,6 @@
 ../Core/Src/status.c:18:6:Info_status	16	static
-../Core/Src/status.c:38:6:Detect1_status	8	static
-../Core/Src/status.c:61:6:Detect2_status	8	static
-../Core/Src/status.c:77:6:Detect3_status	8	static
-../Core/Src/status.c:100:6:Idle_status	104	static
-../Core/Src/status.c:166:6:Test_status	56	static
+../Core/Src/status.c:41:6:Detect1_status	8	static
+../Core/Src/status.c:64:6:Detect2_status	8	static
+../Core/Src/status.c:80:6:Detect3_status	8	static
+../Core/Src/status.c:103:6:Idle_status	104	static
+../Core/Src/status.c:172:6:Test_status	56	static

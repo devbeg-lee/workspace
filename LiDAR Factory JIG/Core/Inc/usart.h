@@ -40,6 +40,7 @@ extern "C"
     /* USER CODE BEGIN Private defines */
     extern volatile uint8_t g_Viewer_IRQ_Flag;
     extern volatile uint8_t g_Start_Switch_IRQ_Flag;
+
     /* USER CODE END Private defines */
 
     void MX_UART5_Init(void);

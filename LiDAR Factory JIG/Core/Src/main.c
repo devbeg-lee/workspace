@@ -74,7 +74,6 @@ uint8_t result_3 = 0;
 uint8_t result_4 = 0;
 uint8_t result_5 = 0;
 uint8_t result_6 = 0;
-extern uint8_t tx_start_flag;
 extern volatile uint8_t detect_flag;
 uint8_t avg = 0;
 uint8_t stop_feedback = 0;
@@ -124,14 +123,7 @@ int main(void)
 
   InitUartQueue(&ViewerQueue);
   InitUartQueue(&LiDARQueue);
-  if (HAL_UART_Receive_IT(&hViewer, ViewerQueue.Buffer, 1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UART_Receive_IT(&hLiDAR, LiDARQueue.Buffer, 1) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  __HAL_UART_ENABLE_IT(&hLiDAR, UART_IT_RXNE);
 
   switch_check();
 
@@ -139,35 +131,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  __HAL_UART_ENABLE_IT(&huart5, UART_IT_RXNE);
-  __HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE);
 
   while (1)
   {
-    if (tx_start_flag == 1) // LD Tx On
-    {
-      if (stop_feedback == 0)
-      {
-        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-        stop_feedback = HAL_GPIO_ReadPin(FB_STOP1_SIG_GPIO_Port, FB_STOP1_SIG_Pin);
-        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-        feedback_ng_cnt++;
-        if (feedback_ng_cnt >= 5)
-        {
-          g_Result = kResult_Err_11;
-          stop_feedback = 1;
-          feedback_ng_cnt = 0;
-        }
-        Delay_us(20);
-      }
-      else
-      {
-        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
-        Delay_us(20);
-      }
-    }
-    else // Etc.
+    if (tx_start_flag == 0)
     {
       switch (g_Status)
       {
@@ -201,6 +168,29 @@ int main(void)
 
       default:
         break;
+      }
+    }
+    else // LD Tx On
+    {
+      if (stop_feedback == 0)
+      {
+        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        stop_feedback = HAL_GPIO_ReadPin(FB_STOP1_SIG_GPIO_Port, FB_STOP1_SIG_Pin);
+        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        feedback_ng_cnt++;
+        if (feedback_ng_cnt >= 5)
+        {
+          g_Result = kResult_Err_11;
+          stop_feedback = 1;
+          feedback_ng_cnt = 0;
+        }
+        Delay_us(20);
+      }
+      else
+      {
+        LL_GPIO_SetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        LL_GPIO_ResetOutputPin(LD_TRIG_GPIO_Port, LD_TRIG_Pin);
+        Delay_us(20);
       }
     }
 
@@ -388,81 +378,6 @@ void USART6_Rx_Callback(USART_TypeDef *USARTx)
   }
 }
 */
-// void UART5_Rx_Callback(USART_TypeDef *USARTx) // PC Interrupt
-// {
-//   uint8_t rx_data[9] = {
-//       0,
-//   };
-//   uint8_t CONNECT_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0xDA};
-//   uint8_t INFO_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x25};
-//   uint8_t MODE_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x01, 0x00, 0x01, 0x00, 0xDA};
-
-//   for (uint8_t i = 0; i < 9; i++)
-//   {
-//     rx_data[i] = LL_USART_ReceiveData8(UART5);
-//   }
-
-//   if (memcmp(CONNECT_BUFF, rx_data, 9) == 0)
-//   {
-//     GUI_Protocol_Mode(GUI_COMMAND_CONNECT, 0);
-//     connect = 1;
-//     // GPIO Interrupt disable repair
-//   }
-
-//   if (memcmp(INFO_BUFF, rx_data, 9) == 0)
-//   {
-//   }
-// }
-
-// void InfoMode(void)
-// {
-//   uint8_t read_flag = 0;
-//   uint8_t rec_data[13];
-//   uint8_t checksum = 0;
-
-//   LiDAR_Protocol_Mode(LIDAR_COMMAND_INFO);
-//   for (uint8_t i = 0; i < 12; i++)
-//   {
-//     rec_data[i] = LL_USART_ReceiveData8(USART6); // timeout? repair
-//   }
-
-//   for (uint8_t j = 0; j < 11; j++)
-//   {
-//     checksum += rec_data[j];
-//   }
-
-//   if (checksum == rec_data[12])
-//   {
-//     g_LidarInfo.HWVer = (uint16_t)((rec_data[7] & 0x00FF) << 8);
-//     g_LidarInfo.HWVer |= (uint16_t)((rec_data[8] & 0x00FF);
-//     g_LidarInfo.FWVer = (uint16_t)((rec_data[9] & 0x00FF) << 8);
-//     g_LidarInfo.FWVer |= (uint16_t)((rec_data[10] & 0x00FF);
-//     g_LidarInfo.Model = rec_data[11];
-
-//     g_Status = Status_Idle;
-//   }
-//   else
-//   {
-//     g_Status = Status_Info;
-//   }
-// }
-void Idlemode(void)
-{
-  // PC community check
-  // Model, F/W, H/W Ver Protocol Tx(Timeout 5s)
-  // when Rx receive Tx stop
-  // when PC request Model info-> model buff clean : UART Passing / buff full : Info Tx to PC  //sj
-}
-
-void Test_mode(void)
-{
-  // UART2(LiDAR) Start protocol Tx
-  // LiDAR Factory Serial Rx & Sort -> [fail] : 7-segment, buzzer on
-  // detect sig1~3 Tx & Rx
-  // all [ok] : 7-segment, buzzer on
-  // start button enable
-  // Test->Idle Mode change //sj
-}
 
 /* USER CODE END 4 */
 

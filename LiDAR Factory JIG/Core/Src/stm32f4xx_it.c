@@ -55,6 +55,7 @@
 
 uint8_t data = 0;
 uint8_t Rx_Cnt = 0;
+volatile uint8_t tx_start_flag = 0;
 
 /* USER CODE END 0 */
 
@@ -206,7 +207,7 @@ void SysTick_Handler(void)
 /**
  * @brief This function handles EXTI line 0 interrupt.
  */
-void EXTI0_IRQHandler(void) // mode switch
+void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
   switch_check();
@@ -226,10 +227,26 @@ void EXTI0_IRQHandler(void) // mode switch
 /**
  * @brief This function handles EXTI line[15:10] interrupts.
  */
-void EXTI15_10_IRQHandler(void) // start button
+void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  EXTI15_10_EXTI_Callback();
+  if (Mode_data == 0) // jig mode
+  {
+    g_Status = kStatus_Test;
+  }
+  else // tx mode
+  {
+    if (tx_start_flag == 0)
+    {
+      tx_start_flag = 1;
+      __HAL_UART_DISABLE_IT(&hViewer, UART_IT_RXNE);
+    }
+    else
+    {
+      tx_start_flag = 0;
+      __HAL_UART_ENABLE_IT(&hViewer, UART_IT_RXNE);
+    }
+  }
 
   /* USER CODE END EXTI15_10_IRQn 0 */
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_15) != RESET)
@@ -252,7 +269,15 @@ void EXTI15_10_IRQHandler(void) // start button
 void UART5_IRQHandler(void)
 {
   /* USER CODE BEGIN UART5_IRQn 0 */
-  HAL_UART5_RxCpltCallback();
+  if (g_Status == kStatus_Idle)
+  {
+    if ((__HAL_UART_GET_FLAG(&hViewer, UART_FLAG_RXNE) != RESET))
+    {
+      PutDataToUartQueue(&hViewer, (uint8_t)(hViewer.Instance->DR & (uint8_t)0x00FF));
+    }
+    __HAL_UART_CLEAR_PEFLAG(&hViewer); /* clear event flag */
+    return;
+  }
   /* USER CODE END UART5_IRQn 0 */
   HAL_UART_IRQHandler(&huart5);
   /* USER CODE BEGIN UART5_IRQn 1 */
@@ -272,7 +297,6 @@ void USART6_IRQHandler(void)
   }
   __HAL_UART_CLEAR_PEFLAG(&hLiDAR); /* clear event flag */
   return;
-  //  USART6_Rx_Callback();
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */

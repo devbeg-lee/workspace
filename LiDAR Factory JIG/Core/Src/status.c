@@ -20,18 +20,21 @@ void Info_status(void)
     // uint8_t temp_INFO_DATA[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
 
     LiDAR_Protocol_Tx(LIDAR_COMMAND_INFO);
-    Delay_ms(10);
+    Delay_ms(100);
     while (LiDARQueue.data > 0)
     {
         INFO_RX_BUFF[INFO_RX_Cnt++] = GetDataFromUartQueue(&hLiDAR);
     }
     if (INFO_RX_BUFF[0] != 0x00)
     {
-        // LiDAR_Model = temp_INFO_DATA[10];
         LiDAR_Model = INFO_RX_BUFF[10]; //원래 11
         INFO_RX_Flag = 1;
         INFO_RX_Cnt = 0;
         g_Status = kStatus_Detect1;
+    }
+    else
+    {
+        memset(INFO_RX_BUFF, 0, sizeof(INFO_RX_BUFF));
     }
 }
 
@@ -99,6 +102,8 @@ void Detect3_status(void)
 
 void Idle_status(void)
 {
+    __HAL_UART_ENABLE_IT(&hViewer, UART_IT_RXNE);
+
     uint8_t CONNECT_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0xDA};
     uint8_t INFO_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x25};
     uint8_t MODE_BUFF[9] = {0xFA, 0x00, 0xD0, 0xF0, 0x01, 0x00, 0x01, 0x00, 0xDA};
@@ -160,6 +165,7 @@ void Idle_status(void)
     }
     else
     {
+        memset(VIEWER_RX_BUFF, 0, sizeof(VIEWER_RX_BUFF));
     }
 }
 
