@@ -7,11 +7,11 @@
 #define hViewer huart5
 #define hLiDAR huart6
 
-#define QUEUE_BUFFER_LENGTH 255
+#define QUEUE_BUFFER_LENGTH 1000
 
 typedef struct
 {
-    uint8_t head, tail, data;
+    uint16_t head, tail, data;
     uint8_t Buffer[QUEUE_BUFFER_LENGTH];
 } UARTQUEUE, *pUARTQUEUE;
 

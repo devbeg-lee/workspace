@@ -23,8 +23,7 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -49,6 +48,7 @@ extern "C"
 #include "status.h"
 #include "usart.h"
 #include "ringbuf.h"
+#include "result.h"
   // UART1 : JIG Board DBG
   // UART2 : LiDAR RS232
   // UART3 : LiDAR RS485

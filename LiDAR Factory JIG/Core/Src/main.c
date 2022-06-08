@@ -51,6 +51,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -58,29 +59,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 volatile enum eStatus g_Status = kStatus_Info;
-
-uint8_t sArr[10][100] = {{
-                             0,
-                         },
-                         {
-                             0,
-                         }};
-uint8_t row_idx = 0;
-uint8_t col_idx = 0;
-uint8_t temp[6];
-uint8_t result_1 = 0;
-uint8_t result_2 = 0;
-uint8_t result_3 = 0;
-uint8_t result_4 = 0;
-uint8_t result_5 = 0;
-uint8_t result_6 = 0;
-extern volatile uint8_t detect_flag;
-uint8_t avg = 0;
 uint8_t stop_feedback = 0;
 uint8_t feedback_ng_cnt = 0;
-
-extern uint8_t rx_flag;
-extern uint8_t rx_data[9];
 
 extern uint8_t Mode_data;
 
@@ -118,14 +98,20 @@ int main(void)
   MX_UART5_Init();
   MX_TIM3_Init();
   MX_USART6_UART_Init();
+  MX_TIM2_Init();
+
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   DWT_Delay_Init();
 
   InitUartQueue(&ViewerQueue);
   InitUartQueue(&LiDARQueue);
-  __HAL_UART_ENABLE_IT(&hLiDAR, UART_IT_RXNE);
 
   switch_check();
+
+  __HAL_UART_ENABLE_IT(&hLiDAR, UART_IT_RXNE);
+  LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15);
 
   /* USER CODE END 2 */
 
@@ -159,11 +145,12 @@ int main(void)
         break;
 
       case kStatus_Test:
+
         Test_status();
         break;
 
       case kStatus_Result:
-        result();
+        result(g_Result);
         break;
 
       default:
@@ -180,7 +167,7 @@ int main(void)
         feedback_ng_cnt++;
         if (feedback_ng_cnt >= 5)
         {
-          g_Result = kResult_Err_11;
+          result(kResult_Err_11);
           stop_feedback = 1;
           feedback_ng_cnt = 0;
         }
@@ -193,58 +180,6 @@ int main(void)
         Delay_us(20);
       }
     }
-
-    // swtich(g_Status);
-    // {
-    // case Status_Info: // LiDAR H/W, F/W Ver, Model request
-    //   InfoMode();
-    //   break;
-
-    // case Status_Idle: // wait start button, wait PC Interrupt
-    //   IdleMode();
-    //   break;
-
-    // case Status_Test: // start test
-    //   TestMode();
-    //   break;
-
-    // case Status_Result: // result display
-    //   ResultMode();
-    //   break;
-
-    // default:
-    //   break;
-    // }
-    // if (result_1)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_ETHERNET, 0);
-    //   result_1 = 0;
-    // }
-    // if (result_2)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_APD_BIAS, 0);
-    //   result_2 = 0;
-    // }
-    // if (result_3)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_MOT_SPEED, 0);
-    //   result_3 = 0;
-    // }
-    // if (result_4)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_ENC_CHECK, 0);
-    //   result_4 = 0;
-    // }
-    // if (result_5)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_TDC_INIT, 0);
-    //   result_5 = 0;
-    // }
-    // if (result_6)
-    // {
-    //   GUI_Protocol_Mode(GUI_COMMAND_TDC_CAL, 0);
-    //   result_6 = 0;
-    // }
   }
   /* USER CODE END WHILE */
 
@@ -306,78 +241,18 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
-/*
-void USART6_Rx_Callback(USART_TypeDef *USARTx)
+/**
+ * @brief NVIC Configuration.
+ * @retval None
+ */
+static void MX_NVIC_Init(void)
 {
-  uint8_t ETH_BUFF[6] = {' ', 'E', 't', 'h', 'e', 'r'};
-  uint8_t APD_BUFF[6] = {' ', 'A', 'P', 'D', ' ', 'B'};
-  uint8_t MOT_BUFF[6] = {' ', 'M', 'o', 't', 'o', 'r'};
-  uint8_t ENC_BUFF[6] = {' ', 'E', 'n', 'c', 'o', 'd'};
-  uint8_t TDC_INIT_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'I'};
-  uint8_t TDC_CAL_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'C'};
-
-  rx_data = LL_USART_ReceiveData8(USART6);
-
-  if (rx_data != '\n') // non carriage return
-  {
-    sArr[col_idx][row_idx] = rx_data;
-    row_idx++;
-  }
-  else // carriage return Rx
-  {
-    if (sArr[col_idx][row_idx - 4] == 'o' && sArr[col_idx][row_idx - 3] == 'k')
-    {
-      for (uint8_t i = 0; i <= 5; i++)
-      {
-        temp[i] = sArr[col_idx][i];
-      }
-
-      if (memcmp(ETH_BUFF, temp, 6) == 0)
-      {
-        result_1 = 1;
-      }
-      if (memcmp(APD_BUFF, temp, 6) == 0)
-      {
-        result_2 = 1;
-      }
-      if (memcmp(MOT_BUFF, temp, 6) == 0)
-      {
-        result_3 = 1;
-      }
-      if (memcmp(ENC_BUFF, temp, 6) == 0)
-      {
-        result_4 = 1;
-      }
-      if (memcmp(TDC_INIT_BUFF, temp, 6) == 0)
-      {
-        result_5 = 1;
-      }
-      if (memcmp(TDC_CAL_BUFF, temp, 6) == 0)
-      {
-        result_6 = 1;
-      }
-
-      col_idx++;
-      row_idx = 0;
-    }
-    else if (sArr[col_idx][row_idx - 4] == 'i' && sArr[col_idx][row_idx - 3] == 'l')
-    {
-      col_idx++;
-      row_idx = 0;
-    }
-
-    else
-    {
-      for (uint8_t i = 0; i <= sizeof(row_idx); i++)
-      {
-        sArr[col_idx][i] = 0;
-      }
-      row_idx = 0;
-    }
-  }
+  /* TIM2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
 }
-*/
+
+/* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
 

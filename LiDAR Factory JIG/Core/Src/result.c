@@ -19,15 +19,17 @@ volatile enum eResult g_Result = kResult_None;
 
 extern TIM_HandleTypeDef htim3;
 int divide_freq = 2000000;
+int duty_freq = 3500000;
 
 void fail_sound(uint8_t i)
 {
-    if (i == 0 || i == 2)
+    if (i == 0 || i == 2 || i == 4 || i == 6)
     {
-        unsigned int fail_sound[] = {C5, C5, C5, C5};
+        unsigned int fail_sound[] = {T5, T5, T5, T5, T5, T5, T5, T5}; //수정 중
 
         __HAL_TIM_SET_AUTORELOAD(&htim3, divide_freq / fail_sound[i]);
-        __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, divide_freq / fail_sound[i] / 2);
+        //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, divide_freq / fail_sound[i] / 2);
+        __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, duty_freq / fail_sound[i] / 2);
     }
     else
     {
@@ -37,15 +39,15 @@ void fail_sound(uint8_t i)
 
 void pass_sound(uint8_t i)
 {
-    unsigned int pass_sound[] = {C4, E4, G4, C5};
+    unsigned int pass_sound[] = {C5, E5, G5, C6, C5, E5, G5, C6};
 
     __HAL_TIM_SET_AUTORELOAD(&htim3, divide_freq / pass_sound[i]);
-    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, divide_freq / pass_sound[i] / 2);
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, duty_freq / pass_sound[i] / 2);
 }
 
-void result(void)
+void result(uint8_t data)
 {
-    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+    g_Result = data;
 
     switch (g_Result)
     {
@@ -57,10 +59,11 @@ void result(void)
         break;
 
     case kResult_Pass:
-        for (uint8_t j = 0; j <= 3; j++)
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+        for (uint8_t j = 0; j <= 7; j++)
         {
             pass_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_P();
@@ -78,10 +81,11 @@ void result(void)
         break;
 
     case kResult_Err_1: // UART Fail
-        for (uint8_t j = 0; j <= 3; j++)
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -99,11 +103,13 @@ void result(void)
         }
         break;
 
-    case kResult_Err_2: // Ethernet chip Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_2: // Detect Pin 1 Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -120,11 +126,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_3: // APD BIAS Control Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_3: // Detect Pin 2 Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -141,11 +149,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_4: // Motor Speed Cailbration Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_4: // Err Pin Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -162,11 +172,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_5: // Encoder Check Start Point Slit Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_5: // Ethernet chip Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -183,11 +195,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_6: // TDC Init Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_6: // APD BIAS Control Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -204,11 +218,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_7: // TDC Calibration Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_7: // Motor speed calibration Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -225,11 +241,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_8: // Detect 1 Pin Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_8: // Encoder check start slit Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -246,11 +264,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_9: // Detect 2 Pin Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_9: // TDC Init Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -267,11 +287,13 @@ void result(void)
             }
         }
         break;
-    case kResult_Err_10: // Detect 3 Pin Fail
-        for (uint8_t j = 0; j <= 3; j++)
+    case kResult_Err_10: // TDC Calibration Fail
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -289,10 +311,12 @@ void result(void)
         }
         break;
     case kResult_Err_11: // LD Tx feedback Fail
-        for (uint8_t j = 0; j <= 3; j++)
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -310,10 +334,12 @@ void result(void)
         }
         break;
     case kResult_Err_12: //여분
-        for (uint8_t j = 0; j <= 3; j++)
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+
+        for (uint8_t j = 0; j <= 7; j++)
         {
             fail_sound(j);
-            for (uint8_t i = 1; i <= 250; i++)
+            for (uint8_t i = 1; i <= 125; i++)
             {
                 FND_1();
                 FND_E();
@@ -335,8 +361,9 @@ void result(void)
         break;
     }
     HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3);
-    g_Result = kResult_None;
     turn_off();
+    g_Result = kResult_None;
+    g_Status = kStatus_Idle;
 }
 
 void FND_1(void)

@@ -1,46 +1,60 @@
 #include "status.h"
 
 uint8_t connect = 0;
-uint8_t INFO_RX_Flag = 0;
 uint8_t INFO_RX_BUFF[13] = {0};
 uint8_t INFO_RX_Cnt = 0;
 uint8_t LiDAR_Model = 0;
 uint8_t Detect1_Result = 0;
-uint8_t Detect1_Flag = 0;
 uint8_t Detect2_Result = 0;
-uint8_t Detect2_Flag = 0;
 uint8_t Detect3_Result = 0;
-uint8_t Detect3_Flag = 0;
 uint8_t Detect_Check_Count = 0;
 uint8_t VIEWER_RX_BUFF[9] = {0};
 uint8_t VIEWER_RX_Cnt = 0;
+uint8_t LiDAR_RX_BUFF[256] = {0};
+uint8_t LiDAR_RX_Cnt = 0;
+uint8_t Test_Start_Flag = 0;
 
 void Info_status(void)
 {
+    uint8_t checksum = 0;
     // uint8_t temp_INFO_DATA[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
 
     LiDAR_Protocol_Tx(LIDAR_COMMAND_INFO);
-    Delay_ms(100);
+    Delay_ms(500);
     while (LiDARQueue.data > 0)
     {
         INFO_RX_BUFF[INFO_RX_Cnt++] = GetDataFromUartQueue(&hLiDAR);
     }
-    if (INFO_RX_BUFF[0] != 0x00)
+    if (INFO_RX_BUFF[0] != 0xFA)
     {
-        LiDAR_Model = INFO_RX_BUFF[10]; //원래 11
-        INFO_RX_Flag = 1;
         INFO_RX_Cnt = 0;
-        g_Status = kStatus_Detect1;
+        memset(INFO_RX_BUFF, 0, sizeof(INFO_RX_BUFF));
     }
     else
     {
-        memset(INFO_RX_BUFF, 0, sizeof(INFO_RX_BUFF));
+        checksum = INFO_RX_BUFF[0];
+        for (uint8_t i = 1; i < INFO_RX_Cnt - 1; i++)
+        {
+            checksum ^= INFO_RX_BUFF[i];
+        }
+
+        if (INFO_RX_BUFF[12] == checksum)
+        {
+            LiDAR_Model = INFO_RX_BUFF[11];
+            INFO_RX_Cnt = 0;
+            g_Status = kStatus_Detect1;
+        }
+        else
+        {
+            INFO_RX_Cnt = 0;
+            memset(INFO_RX_BUFF, 0, sizeof(INFO_RX_BUFF));
+        }
     }
 }
 
 void Detect1_status(void)
 {
-    while (Detect_Check_Count < 10 && Detect1_Result != 0x01U)
+    while (Detect_Check_Count < 20 && Detect1_Result != 0x01U)
     {
         LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT1);
         Delay_ms(1);
@@ -49,8 +63,8 @@ void Detect1_status(void)
         Detect_Check_Count++;
     }
 
-    Detect1_Flag = 1;
     Detect_Check_Count = 0;
+
     if (LiDAR_Model == 0x04) // R300
     {
         g_Status = kStatus_Detect3;
@@ -63,7 +77,7 @@ void Detect1_status(void)
 
 void Detect2_status(void)
 {
-    while (Detect_Check_Count < 10 && Detect2_Result != 0x01U)
+    while (Detect_Check_Count < 20 && Detect2_Result != 0x01U)
     {
         LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT2);
         Delay_ms(1);
@@ -72,14 +86,13 @@ void Detect2_status(void)
         Detect_Check_Count++;
     }
 
-    Detect2_Flag = 1;
     Detect_Check_Count = 0;
     g_Status = kStatus_Detect3;
 }
 
 void Detect3_status(void)
 {
-    while (Detect_Check_Count < 10 && Detect3_Result != 0x01U)
+    while (Detect_Check_Count < 20 && Detect3_Result != 0x01U)
     {
         LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT3);
         Delay_ms(5);
@@ -95,9 +108,15 @@ void Detect3_status(void)
         Detect_Check_Count++;
     }
 
-    Detect3_Flag = 1;
     Detect_Check_Count = 0;
+
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
+        Delay_ms(500);
+    }
     g_Status = kStatus_Idle;
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_15);
 }
 
 void Idle_status(void)
@@ -111,7 +130,6 @@ void Idle_status(void)
     uint8_t DETECT1_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x02, 0x00, 0x00, 0x00, 0x27};
     uint8_t DETECT2_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x03, 0x00, 0x00, 0x00, 0x26};
     uint8_t DETECT3_BUFF[9] = {0xFA, 0x00, 0xD0, 0x0F, 0x04, 0x00, 0x00, 0x00, 0x21};
-    // uint8_t temp_INFO_DATA[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
 
     LiDAR_Cur_Check();
 
@@ -124,6 +142,7 @@ void Idle_status(void)
     {
         GUI_Protocol_Tx(GUI_COMMAND_CONNECT, 0);
         connect = 1;
+        LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15);
         memset(VIEWER_RX_BUFF, 0, sizeof(VIEWER_RX_BUFF));
         VIEWER_RX_Cnt = 0;
     }
@@ -178,6 +197,143 @@ void Test_status(void)
     uint8_t TDC_INIT_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'I'};
     uint8_t TDC_CAL_BUFF[6] = {' ', 'T', 'D', 'C', ' ', 'C'};
 
-    LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
-    Delay_ms(500);
+    LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15);
+    HAL_TIM_Base_Start_IT(&htim2);
+
+    if (Test_Start_Flag == 0)
+    {
+        LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
+    }
+    while (LiDARQueue.data > 0)
+    {
+        Test_Start_Flag = 1;
+        uint8_t data = GetDataFromUartQueue(&hLiDAR);
+        if (data != '\n') // non carriage return
+        {
+            LiDAR_RX_BUFF[LiDAR_RX_Cnt++] = data;
+        }
+        else // input carriage return
+        {
+            if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 4] == 'o' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 3] == 'k')
+            {
+                if (memcmp(ETH_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_ETHERNET, 0x00);
+                }
+                else if (memcmp(APD_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_APD_BIAS, 0x00);
+                }
+                else if (memcmp(MOT_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_MOT_SPEED, 0x00);
+                }
+                else if (memcmp(ENC_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_ENC_CHECK, 0x00);
+                }
+                else if (memcmp(TDC_INIT_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_TDC_INIT, 0x00);
+                }
+                else if (memcmp(TDC_CAL_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_TDC_CAL, 0x00);
+                    g_Status = kStatus_Result;
+
+                    if (LiDAR_Model == 0x04)
+                    {
+                        if (Detect1_Result == 0)
+                        {
+                            g_Result = kResult_Err_2;
+                        }
+                        else if (Detect3_Result == 0)
+                        {
+                            g_Result = kResult_Err_4;
+                        }
+                        else
+                        {
+                            g_Result = kResult_Pass;
+                        }
+                    }
+
+                    else
+                    {
+                        if (Detect1_Result == 0)
+                        {
+                            g_Result = kResult_Err_2;
+                        }
+                        else if (Detect2_Result == 0)
+                        {
+                            g_Result = kResult_Err_3;
+                        }
+                        else if (Detect3_Result == 0)
+                        {
+                            g_Result = kResult_Err_4;
+                        }
+                        else
+                        {
+                            g_Result = kResult_Pass;
+                        }
+                    }
+                }
+                else
+                {
+                };
+                memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
+                LiDAR_RX_Cnt = 0;
+            }
+            else if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 4] == 'i' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 3] == 'l')
+            {
+                if (memcmp(ETH_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_ETHERNET, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_5;
+                }
+                else if (memcmp(APD_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_APD_BIAS, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_6;
+                }
+                else if (memcmp(MOT_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_MOT_SPEED, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_7;
+                }
+                else if (memcmp(ENC_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_ENC_CHECK, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_8;
+                }
+                else if (memcmp(TDC_INIT_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_TDC_INIT, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_9;
+                }
+                else if (memcmp(TDC_CAL_BUFF, LiDAR_RX_BUFF, 6) == 0)
+                {
+                    GUI_Protocol_Tx(GUI_COMMAND_TDC_CAL, 0x01);
+                    g_Status = kStatus_Result;
+                    g_Result = kResult_Err_10;
+                }
+                else
+                {
+                };
+                memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
+                LiDAR_RX_Cnt = 0;
+            }
+            else
+            {
+                memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
+                LiDAR_RX_Cnt = 0;
+            }
+        }
+    }
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_15);
+    HAL_TIM_Base_Stop_IT(&htim2);
 }

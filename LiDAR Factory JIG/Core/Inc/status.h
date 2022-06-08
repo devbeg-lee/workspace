@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "switch.h"
 #include "adc.h"
+#include "tim.h"
 
 extern uint8_t connect;
 extern uint8_t VIEWER_RX_BUFF[9];

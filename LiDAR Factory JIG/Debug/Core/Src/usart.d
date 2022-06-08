@@ -42,7 +42,7 @@ Core/Src/usart.o: ../Core/Src/usart.c ../Core/Inc/usart.h \
  ../Core/Inc/conf.h ../Core/Inc/switch.h ../Core/Inc/stm32f4xx_it.h \
  ../Core/Inc/usart.h ../Core/Inc/result.h ../Core/Inc/delay.h \
  ../Core/Inc/status.h ../Core/Inc/protocol.h ../Core/Inc/adc.h \
- ../Core/Inc/ringbuf.h
+ ../Core/Inc/tim.h ../Core/Inc/ringbuf.h
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -94,4 +94,5 @@ Core/Src/usart.o: ../Core/Src/usart.c ../Core/Inc/usart.h \
 ../Core/Inc/status.h:
 ../Core/Inc/protocol.h:
 ../Core/Inc/adc.h:
+../Core/Inc/tim.h:
 ../Core/Inc/ringbuf.h:
