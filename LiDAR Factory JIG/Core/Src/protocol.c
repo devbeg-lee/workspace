@@ -45,24 +45,7 @@ void GUI_Protocol_Tx(uint8_t parameter, uint8_t data)
     switch (parameter)
     {
     case GUI_COMMAND_CONNECT:
-
-        senddata[cnt++] = PROTOCOL_HEADER;
-        senddata[cnt++] = PRODUCT_LINE;
-        senddata[cnt++] = PRODUCT_ID;
-        senddata[cnt++] = GUI_MODE;
-        senddata[cnt++] = parameter;
-        senddata[cnt++] = 0x00U;
-        senddata[cnt++] = 0x00U;
-        senddata[cnt++] = data;
-
-        checksum = senddata[0];
-        for (uint16_t i = 1U; i < cnt; i++)
-        {
-            checksum ^= senddata[i];
-        }
-        senddata[cnt++] = checksum;
-        break;
-
+    case GUI_COMMAND_RESET:
     case GUI_COMMAND_ETHERNET:
     case GUI_COMMAND_APD_BIAS:
     case GUI_COMMAND_MOT_SPEED:
@@ -77,7 +60,7 @@ void GUI_Protocol_Tx(uint8_t parameter, uint8_t data)
         senddata[cnt++] = parameter;
         senddata[cnt++] = 0x00U;
         senddata[cnt++] = 0x01U;
-        senddata[cnt++] = data; // 0x00 : OK, 0x01 : FAIL
+        senddata[cnt++] = data; // 0x00 : OK, 0x01 : FAIL / ACK
 
         checksum = senddata[0];
         for (uint16_t i = 1U; i < cnt; i++)

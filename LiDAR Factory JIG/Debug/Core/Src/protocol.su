@@ -1,4 +1,4 @@
 ../Core/Src/protocol.c:3:6:LiDAR_Protocol_Tx	32	static
 ../Core/Src/protocol.c:39:6:GUI_Protocol_Tx	32	static
-../Core/Src/protocol.c:96:6:GUI_Protocol_Mode_Tx	32	static
-../Core/Src/protocol.c:122:6:GUI_Protocol_Detect_Tx	32	static
+../Core/Src/protocol.c:79:6:GUI_Protocol_Mode_Tx	32	static
+../Core/Src/protocol.c:105:6:GUI_Protocol_Detect_Tx	32	static

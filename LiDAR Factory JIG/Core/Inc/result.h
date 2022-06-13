@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "delay.h"
+#include "status.h"
 
 enum eResult
 {
