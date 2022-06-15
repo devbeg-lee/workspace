@@ -52,6 +52,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 LiDAR\ Factory\ JIG.list \
 
+OBJCOPY_HEX += \
+LiDAR\ Factory\ JIG.hex \
+
+OBJCOPY_BIN += \
+LiDAR\ Factory\ JIG.bin \
+
 
 # All Target
 all: main-build
@@ -75,12 +81,22 @@ LiDAR\ Factory\ JIG.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_D
 	@echo 'Finished building: $@'
 	@echo ' '
 
+LiDAR\ Factory\ JIG.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "LiDAR Factory JIG.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+LiDAR\ Factory\ JIG.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "LiDAR Factory JIG.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) LiDAR\ Factory\ JIG.elf LiDAR\ Factory\ JIG.list LiDAR\ Factory\ JIG.map LiDAR\\ Factory\\ JIG.elf default.size.stdout
+	-$(RM) LiDAR\ Factory\ JIG.bin LiDAR\ Factory\ JIG.elf LiDAR\ Factory\ JIG.hex LiDAR\ Factory\ JIG.list LiDAR\ Factory\ JIG.map LiDAR\\ Factory\\ JIG.elf default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

@@ -5,4 +5,4 @@
 ../Core/Src/status.c:77:6:Detect2_status	8	static
 ../Core/Src/status.c:92:6:Detect3_status	16	static
 ../Core/Src/status.c:121:6:Idle_status	112	static
-../Core/Src/status.c:226:6:Test_status	56	static
+../Core/Src/status.c:228:6:Test_status	56	static

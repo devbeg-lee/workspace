@@ -160,8 +160,10 @@ void Idle_status(void)
 
                 GUI_Protocol_Tx(GUI_COMMAND_CONNECT, 1);
                 connect = 1;
-                LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15);
-
+                if (Mode_data == 0)
+                {
+                    LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_15);
+                }
                 memset(VIEWER_RX_BUFF, 0, sizeof(VIEWER_RX_BUFF));
                 VIEWER_RX_Cnt = 0;
             }
