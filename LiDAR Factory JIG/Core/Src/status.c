@@ -245,13 +245,14 @@ void Test_status(void)
     {
         Test_Start_Flag = 1;
         uint8_t data = GetDataFromUartQueue(&hLiDAR);
-        if (data != '\n') // non carriage return
+        // if (data != '\n') // non carriage return
+        if (data != ']' && data != '\n')
         {
             LiDAR_RX_BUFF[LiDAR_RX_Cnt++] = data;
         }
-        else // input carriage return
+        else if (data == ']') // input carriage return
         {
-            if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 4] == 'o' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 3] == 'k')
+            if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 2] == 'o' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 1] == 'k')
             {
                 if (memcmp(ETH_BUFF, LiDAR_RX_BUFF, 6) == 0)
                 {
@@ -320,7 +321,7 @@ void Test_status(void)
                 memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
                 LiDAR_RX_Cnt = 0;
             }
-            else if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 4] == 'i' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 3] == 'l')
+            else if (LiDAR_RX_BUFF[LiDAR_RX_Cnt - 2] == 'i' && LiDAR_RX_BUFF[LiDAR_RX_Cnt - 1] == 'l')
             {
                 if (memcmp(ETH_BUFF, LiDAR_RX_BUFF, 6) == 0)
                 {
@@ -369,6 +370,11 @@ void Test_status(void)
                 memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
                 LiDAR_RX_Cnt = 0;
             }
+        }
+        else if (data == 0x0A) // LF
+        {
+            memset(LiDAR_RX_BUFF, 0x00, sizeof(LiDAR_RX_BUFF));
+            LiDAR_RX_Cnt = 0;
         }
     }
     LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_15);
