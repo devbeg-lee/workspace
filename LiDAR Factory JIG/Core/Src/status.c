@@ -54,15 +54,25 @@ void Info_status(void)
 
 void Detect1_status(void)
 {
-    while (Detect_Check_Count < 20 && Detect1_Result != 0x01U)
-    {
-        LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT1);
-        Delay_ms(1);
-        Detect1_Result = HAL_GPIO_ReadPin(Detect_SIG_1_GPIO_Port, Detect_SIG_1_Pin);
+    uint8_t detect_connect_chk = 0;
+    detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_1_GPIO_Port, Detect_SIG_1_Pin);
 
-        Detect_Check_Count++;
+    if (detect_connect_chk)
+    {
+        Detect1_Result = 0;
     }
-    Detect_Check_Count = 0;
+    else
+    {
+        while (Detect_Check_Count < 20 && Detect1_Result != 0x01U)
+        {
+            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT1);
+            Delay_ms(1);
+            Detect1_Result = HAL_GPIO_ReadPin(Detect_SIG_1_GPIO_Port, Detect_SIG_1_Pin);
+
+            Detect_Check_Count++;
+        }
+        Detect_Check_Count = 0;
+    }
 
     if (LiDAR_Model == 0x04) // R300
     {
@@ -76,39 +86,58 @@ void Detect1_status(void)
 
 void Detect2_status(void)
 {
-    while (Detect_Check_Count < 20 && Detect2_Result != 0x01U)
+    uint8_t detect_connect_chk = 0;
+    detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
+
+    if (detect_connect_chk)
     {
-        LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT2);
-        Delay_ms(1);
-        Detect2_Result = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
-
-        Detect_Check_Count++;
+        Detect2_Result = 0;
     }
+    else
+    {
+        while (Detect_Check_Count < 20 && Detect2_Result != 0x01U)
+        {
+            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT2);
+            Delay_ms(1);
+            Detect2_Result = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
 
-    Detect_Check_Count = 0;
+            Detect_Check_Count++;
+        }
+        Detect_Check_Count = 0;
+    }
     g_Status = kStatus_Detect3;
 }
 
 void Detect3_status(void)
 {
-    while (Detect_Check_Count < 20 && Detect3_Result != 0x01U)
+    uint8_t detect_connect_chk = 0;
+    detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_3_GPIO_Port, Detect_SIG_3_Pin);
+
+    if (detect_connect_chk)
     {
-        LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT3);
-        Delay_ms(5);
-        if (LiDAR_Model == 0x04) // R300
-        {
-            Detect3_Result = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
-        }
-        else
-        {
-            Detect3_Result = HAL_GPIO_ReadPin(Detect_SIG_3_GPIO_Port, Detect_SIG_3_Pin);
-        }
-
-        Detect_Check_Count++;
+        Detect3_Result = 0;
     }
+    else
+    {
 
-    Detect_Check_Count = 0;
+        while (Detect_Check_Count < 20 && Detect3_Result != 0x01U)
+        {
+            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT3);
+            Delay_ms(5);
+            if (LiDAR_Model == 0x04) // R300
+            {
+                Detect3_Result = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
+            }
+            else
+            {
+                Detect3_Result = HAL_GPIO_ReadPin(Detect_SIG_3_GPIO_Port, Detect_SIG_3_Pin);
+            }
 
+            Detect_Check_Count++;
+        }
+
+        Detect_Check_Count = 0;
+    }
     for (uint8_t i = 0; i < 4; i++)
     {
         HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
