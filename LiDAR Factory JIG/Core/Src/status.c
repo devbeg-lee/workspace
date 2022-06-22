@@ -111,7 +111,14 @@ void Detect2_status(void)
 void Detect3_status(void)
 {
     uint8_t detect_connect_chk = 0;
-    detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_3_GPIO_Port, Detect_SIG_3_Pin);
+    if (LiDAR_Model == 0x04) // R300
+    {
+        detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
+    }
+    else
+    {
+        detect_connect_chk = HAL_GPIO_ReadPin(Detect_SIG_3_GPIO_Port, Detect_SIG_3_Pin);
+    }
 
     if (detect_connect_chk)
     {
