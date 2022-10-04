@@ -18,12 +18,17 @@ void Info_status(void)
 {
     uint8_t checksum = 0;
     // uint8_t temp_INFO_DATA[13] = {0xFA, 0x00, 0xD0, 0x0F, 0x00, 0x00, 0x05, 0x01, 0xF4, 0x01, 0x2F, 0x04, 0xFF};
-
-    LiDAR_Protocol_Tx(LIDAR_COMMAND_INFO);
+    if ((g_R300_connect || g_R4_connect) == 0)
+    {
+        LiDAR_Protocol_Tx(&hR300, LIDAR_COMMAND_INFO);
+        Delay_ms(1);
+        LiDAR_Protocol_Tx(&hR4, LIDAR_COMMAND_INFO);
+        Delay_ms(1);
+    }
     Delay_ms(500);
     while (LiDARQueue.data > 0)
     {
-        INFO_RX_BUFF[INFO_RX_Cnt++] = GetDataFromUartQueue(&hLiDAR);
+        INFO_RX_BUFF[INFO_RX_Cnt++] = GetDataFromUartQueue(&hR300);
     }
     if (INFO_RX_BUFF[0] != 0xFA)
     {
@@ -65,7 +70,14 @@ void Detect1_status(void)
     {
         while (Detect_Check_Count < 20 && Detect1_Result != 0x01U)
         {
-            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT1);
+            if (g_R300_connect)
+            {
+                LiDAR_Protocol_Tx(&hR300, LIDAR_COMMAND_DETECT1);
+            }
+            else
+            {
+                LiDAR_Protocol_Tx(&hR4, LIDAR_COMMAND_DETECT1);
+            }
             Delay_ms(1);
             Detect1_Result = HAL_GPIO_ReadPin(Detect_SIG_1_GPIO_Port, Detect_SIG_1_Pin);
 
@@ -97,7 +109,14 @@ void Detect2_status(void)
     {
         while (Detect_Check_Count < 20 && Detect2_Result != 0x01U)
         {
-            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT2);
+            if (g_R300_connect)
+            {
+                LiDAR_Protocol_Tx(&hR300, LIDAR_COMMAND_DETECT2);
+            }
+            else
+            {
+                LiDAR_Protocol_Tx(&hR4, LIDAR_COMMAND_DETECT2);
+            }
             Delay_ms(1);
             Detect2_Result = HAL_GPIO_ReadPin(Detect_SIG_2_GPIO_Port, Detect_SIG_2_Pin);
 
@@ -129,7 +148,14 @@ void Detect3_status(void)
 
         while (Detect_Check_Count < 20 && Detect3_Result != 0x01U)
         {
-            LiDAR_Protocol_Tx(LIDAR_COMMAND_DETECT3);
+            if (g_R300_connect)
+            {
+                LiDAR_Protocol_Tx(&hR300, LIDAR_COMMAND_DETECT3);
+            }
+            else
+            {
+                LiDAR_Protocol_Tx(&hR4, LIDAR_COMMAND_DETECT3);
+            }
             Delay_ms(5);
             if (LiDAR_Model == 0x04) // R300
             {
@@ -173,7 +199,7 @@ void Idle_status(void)
 
     while (ViewerQueue.data > 0)
     {
-        VIEWER_RX_BUFF[VIEWER_RX_Cnt++] = GetDataFromUartQueue(&hViewer);
+        VIEWER_RX_BUFF[VIEWER_RX_Cnt++] = GetDataFromUartQueue(&hR300);
     }
 
     if (VIEWER_RX_BUFF[0] != 0xFA)
@@ -275,12 +301,19 @@ void Test_status(void)
 
     if (Test_Start_Flag == 0)
     {
-        LiDAR_Protocol_Tx(LIDAR_COMMAND_START);
+        if (g_R300_connect)
+        {
+            LiDAR_Protocol_Tx(&hR300, LIDAR_COMMAND_START);
+        }
+        else
+        {
+            LiDAR_Protocol_Tx(&hR4, LIDAR_COMMAND_START);
+        }
     }
     while (LiDARQueue.data > 0)
     {
         Test_Start_Flag = 1;
-        uint8_t data = GetDataFromUartQueue(&hLiDAR);
+        uint8_t data = GetDataFromUartQueue(&hR300);
         // if (data != '\n') // non carriage return
         if (data != ']' && data != '\n')
         {

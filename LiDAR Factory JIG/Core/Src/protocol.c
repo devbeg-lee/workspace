@@ -1,10 +1,14 @@
 #include "protocol.h"
 
-void LiDAR_Protocol_Tx(uint8_t parameter)
+uint8_t g_R300_connect = 0;
+uint8_t g_R4_connect = 0;
+uint8_t senddata[9] = {0};
+
+void LiDAR_Protocol_Tx(UART_HandleTypeDef *huart, uint8_t parameter)
 {
     uint8_t checksum = 0U;
     uint8_t cnt = 0U;
-    uint8_t senddata[9] = {0};
+    // uint8_t senddata[9] = {0};
 
     switch (parameter)
     {
@@ -33,7 +37,7 @@ void LiDAR_Protocol_Tx(uint8_t parameter)
     default:
         break;
     }
-    HAL_UART_Transmit(&hLiDAR, senddata, sizeof(senddata), 3000);
+    HAL_UART_Transmit(huart, senddata, sizeof(senddata), 3000);
 }
 
 void GUI_Protocol_Tx(uint8_t parameter, uint8_t data)

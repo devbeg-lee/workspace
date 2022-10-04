@@ -45,7 +45,7 @@ void MX_ADC1_Init(void)
   /* USER CODE END ADC1_Init 1 */
 
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-   */
+  */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV8;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
@@ -64,7 +64,7 @@ void MX_ADC1_Init(void)
   }
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-   */
+  */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
@@ -75,17 +75,18 @@ void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
 }
 
-void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
+void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if (adcHandle->Instance == ADC1)
+  if(adcHandle->Instance==ADC1)
   {
-    /* USER CODE BEGIN ADC1_MspInit 0 */
+  /* USER CODE BEGIN ADC1_MspInit 0 */
 
-    /* USER CODE END ADC1_MspInit 0 */
+  /* USER CODE END ADC1_MspInit 0 */
     /* ADC1 clock enable */
     __HAL_RCC_ADC1_CLK_ENABLE();
 
@@ -98,20 +99,20 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* USER CODE BEGIN ADC1_MspInit 1 */
+  /* USER CODE BEGIN ADC1_MspInit 1 */
 
-    /* USER CODE END ADC1_MspInit 1 */
+  /* USER CODE END ADC1_MspInit 1 */
   }
 }
 
-void HAL_ADC_MspDeInit(ADC_HandleTypeDef *adcHandle)
+void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 {
 
-  if (adcHandle->Instance == ADC1)
+  if(adcHandle->Instance==ADC1)
   {
-    /* USER CODE BEGIN ADC1_MspDeInit 0 */
+  /* USER CODE BEGIN ADC1_MspDeInit 0 */
 
-    /* USER CODE END ADC1_MspDeInit 0 */
+  /* USER CODE END ADC1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_ADC1_CLK_DISABLE();
 
@@ -120,9 +121,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *adcHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
 
-    /* USER CODE BEGIN ADC1_MspDeInit 1 */
+  /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
-    /* USER CODE END ADC1_MspDeInit 1 */
+  /* USER CODE END ADC1_MspDeInit 1 */
   }
 }
 

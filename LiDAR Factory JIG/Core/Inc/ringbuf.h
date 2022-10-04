@@ -5,7 +5,8 @@
 #include "main.h"
 
 #define hViewer huart5
-#define hLiDAR huart6
+#define hR300 huart6
+#define hR4 huart2
 
 #define QUEUE_BUFFER_LENGTH 1000
 
