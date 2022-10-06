@@ -34,6 +34,8 @@ void Info_status(void)
     {
         INFO_RX_Cnt = 0;
         memset(INFO_RX_BUFF, 0, sizeof(INFO_RX_BUFF));
+        g_R300_connect = 0;
+        g_R4_connect = 0;
     }
     else
     {
@@ -199,7 +201,7 @@ void Idle_status(void)
 
     while (ViewerQueue.data > 0)
     {
-        VIEWER_RX_BUFF[VIEWER_RX_Cnt++] = GetDataFromUartQueue(&hR300);
+        VIEWER_RX_BUFF[VIEWER_RX_Cnt++] = GetDataFromUartQueue(&hViewer);
     }
 
     if (VIEWER_RX_BUFF[0] != 0xFA)
@@ -314,7 +316,7 @@ void Test_status(void)
     {
         Test_Start_Flag = 1;
         uint8_t data = GetDataFromUartQueue(&hR300);
-        // if (data != '\n') // non carriage return
+        // if (data != '\n') // non carriage return     //주석 풀지말것
         if (data != ']' && data != '\n')
         {
             LiDAR_RX_BUFF[LiDAR_RX_Cnt++] = data;
